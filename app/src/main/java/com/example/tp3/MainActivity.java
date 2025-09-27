@@ -1,6 +1,8 @@
 package com.example.tp3;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 
@@ -49,12 +51,33 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_agregar_producto, R.id.nav_salir)
+                R.id.nav_home, R.id.nav_agregar_producto)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_salir) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Confirmar salida")
+                        .setMessage("¿Seguro de que querés salir de la aplicación?")
+                        .setPositiveButton("Sí", (dialog, which) -> {
+                            finishAndRemoveTask();
+                        })
+                        .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                        .setCancelable(false)
+                        .show();
+                drawer.closeDrawers();
+                return true;
+            }
+
+            // Para los demás ítems, usar el comportamiento por defecto
+            NavigationUI.onNavDestinationSelected(item, navController);
+            drawer.closeDrawers();
+            return true;
+        });
     }
 
     @Override
